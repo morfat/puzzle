@@ -22,6 +22,8 @@ func maxCalories(fname string, elves *[]int) {
 	total_calories := 0
 	for scanner.Scan() {
 		val := scanner.Text()
+
+		// check if we are to move to the next elve
 		if val == "" {
 			*elves = append(*elves, total_calories)
 			total_calories = 0
@@ -50,20 +52,18 @@ func main() {
 
 	foodElves := make([]int, 0)
 	maxCalories("adventofcode.com_2022_day_1_input.txt", &foodElves)
-
 	slices.Sort(foodElves)
 	// should be 69912
 	maxiElve := slices.Max(foodElves)
 	fmt.Printf(" Maximum Elve is %d \n", maxiElve)
-
 	// sorted elves
 	fmt.Printf("Sorted Elves %v\n", foodElves)
-
+	// sort the  totals in descedning order
 	slices.Reverse(foodElves)
 	// top 3
 	fmt.Printf("Top 3 sorted %v\n", foodElves[:3])
 
-	//sum of top3
+	//calculate sum of top3 calories
 	sum := 0
 	for _, v := range foodElves[:3] {
 		sum += v
