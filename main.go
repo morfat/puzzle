@@ -5,56 +5,11 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"slices"
 	"strconv"
 )
 
-func maxInt(vals []int) int {
-	var max int
-
-	for i, val := range vals {
-		if i == 0 || val > max {
-			max = val
-		}
-	}
-	return max
-}
-
-func maxCalories(calories []string) []int {
-
-	elves := make([]int, 0)
-
-	total_calories := 0
-
-	for _, calorie := range calories {
-
-		if calorie == "" {
-			// append total calories to the elves
-			elves = append(elves, total_calories)
-			total_calories = 0
-			continue
-		}
-
-		c, err := strconv.ParseInt(calorie, 0, 64)
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-		total_calories += int(c)
-
-	}
-
-	if total_calories != 0 {
-		//append this to the total calories
-		elves = append(elves, total_calories)
-		total_calories = 0
-	}
-
-	fmt.Printf("Elves %v\n", elves)
-	return elves
-}
-
-func maxCaloriesFromFile(fname string) []int {
-
-	elves := make([]int, 0)
+func maxCalories(fname string, elves *[]int) {
 
 	f, err := os.Open(fname)
 	if err != nil {
@@ -65,64 +20,54 @@ func maxCaloriesFromFile(fname string) []int {
 	scanner := bufio.NewScanner(f)
 
 	total_calories := 0
-
 	for scanner.Scan() {
-
 		val := scanner.Text()
-
 		if val == "" {
-			elves = append(elves, total_calories)
+			*elves = append(*elves, total_calories)
 			total_calories = 0
 			continue
 		}
-
-		calorie := string(val)
-		c, err := strconv.ParseInt(calorie, 0, 64)
+		c, err := strconv.ParseInt(val, 0, 64)
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
 		total_calories += int(c)
-
-		//fmt.Printf("Val is %s is prefix %v\n", val, isPrefix)
 	}
 
 	if err := scanner.Err(); err != nil {
-		fmt.Printf("Reading standard input: %s", err.Error())
+		fmt.Printf("Reading : %s", err.Error())
 	}
 
 	if total_calories != 0 {
-		fmt.Println("Last calories", total_calories)
 		//append this to the total calories
-		elves = append(elves, total_calories)
+		*elves = append(*elves, total_calories)
 		total_calories = 0
 	}
 
-	fmt.Printf("Elves %v\n", elves)
-
-	return elves
 }
 
 func main() {
 
-	// day one
+	foodElves := make([]int, 0)
+	maxCalories("adventofcode.com_2022_day_1_input.txt", &foodElves)
 
-	cals := []string{"1000", "2000", "3000", "", "4000", "", "5000", "6000", "", "7000", "8000", "9000", "", "10000"}
-
-	elves := maxCalories(cals)
-	max := maxInt(elves)
-
-	fmt.Printf("Maximum elve is %d \n", max)
-
-	//day one real
-
-	foodElves := maxCaloriesFromFile("adventofcode.com_2022_day_1_input.txt")
-
-	maxElve := maxInt(foodElves)
-
+	slices.Sort(foodElves)
 	// should be 69912
-	fmt.Printf(" Maximum elve is %d \n", maxElve)
+	maxiElve := slices.Max(foodElves)
+	fmt.Printf(" Maximum Elve is %d \n", maxiElve)
 
-	//inputStr := string(inputs)
-	//fmt.Println(inputStr)
+	// sorted elves
+	fmt.Printf("Sorted Elves %v\n", foodElves)
+
+	slices.Reverse(foodElves)
+	// top 3
+	fmt.Printf("Top 3 sorted %v\n", foodElves[:3])
+
+	//sum of top3
+	sum := 0
+	for _, v := range foodElves[:3] {
+		sum += v
+	}
+	fmt.Printf("Total sum is  %d\n", sum)
 
 }
